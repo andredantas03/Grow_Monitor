@@ -1,5 +1,6 @@
 import minimalmodbus
 import time
+from influxdb import InfluxDBClient
 
 mb_address = 1 # Modbus address of sensor
 sensy_boi = minimalmodbus.Instrument('/dev/ttyUSB0',mb_address)	# Make an "instrument" object called sensy_boi (port name, slave address (in decimal))
@@ -39,22 +40,34 @@ while True:
     temp = data[1]/10
     condutivity = data[2]
     ph = data[3]/10
-    nitrogen = data[4]
-    phosphoros = data[5]
-    potassium = data[6]
+    nitrogen = data[4]/1.0
+    phosphoros = data[5]/1.0
+    potassium = data[6]/1.0
+
+    client = InfluxDBClient(host="influxdb", database="homegrow")
+
+    data = [{
+    "measurement": "sensor_data",
+    "fields": {"temperature": temp, "humidity": hum,
+               "condutivity": condutivity, "ph": ph,
+               "nitrogen": nitrogen, "phosphoros": phosphoros,
+               "potassium": potassium}
+    }]
+
+    client.write_points(data)  # Send data to influxDB
 
     # Print out the processed data in a little table
     # Pro-tip > \u00B0 is the unicode value for the degree symbol which you can see before the "C" in temperature
-    print("-------------------------------------")
-    print(f"Temperature = {temp}\u00B0C")
-    print(f"Relative Humidity = {hum}%")
-    print(f"Condutivity = {condutivity} \u00B5S/cm")
-    print(f"Ph = {ph}")
-    print(f"Nitrogen = {nitrogen} mg/kg")
-    print(f"Phosphoros = {phosphoros} mg/kg")
-    print(f"Potassium = {potassium} mg/kg")
-    print("-------------------------------------")
-    print("")
+    # print("-------------------------------------")
+    # print(f"Temperature = {temp}\u00B0C")
+    # print(f"Relative Humidity = {hum}%")
+    # print(f"Condutivity = {condutivity} \u00B5S/cm")
+    # print(f"Ph = {ph}")
+    # print(f"Nitrogen = {nitrogen} mg/kg")
+    # print(f"Phosphoros = {phosphoros} mg/kg")
+    # print(f"Potassium = {potassium} mg/kg")
+    # print("-------------------------------------")
+    # print("")
 
     # Piece of mind close out
     sensy_boi.serial.close()
