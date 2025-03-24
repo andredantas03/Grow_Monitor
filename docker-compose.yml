@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+    sensor-collector:
+        build: ./sensor-collector
+        depends_on:
+            - influxdb
+    
+    influxdb:
+        image: "influxdb:1.8"
+        ports:
+            "8086:8086"
+        volumes:
+            -.influxdb-data:/var/lib/influxdb
+        environment:
+            - INFLUXBD_DB=grow_monitor
