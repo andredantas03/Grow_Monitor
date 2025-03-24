@@ -13,4 +13,4 @@ services:
         volumes:
             -.influxdb-data:/var/lib/influxdb
         environment:
-            - INFLUXBD_DB=grow_monitor
+            - INFLUXBD_DB=Grow_monitor

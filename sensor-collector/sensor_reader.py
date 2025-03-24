@@ -16,6 +16,12 @@ sensy_boi.mode = minimalmodbus.MODE_RTU    # Mode to be used (RTU or ascii mode)
 sensy_boi.clear_buffers_before_each_transaction = True
 sensy_boi.close_port_after_each_call = True
 
+INFLUX_HOST = "influxdb"  # Nome do serviço no docker-compose.yml
+INFLUX_DB = "Grow_monitor"
+
+client = InfluxDBClient(host=INFLUX_HOST, database=INFLUX_DB)
+
+
 ## Uncomment this line to print out all the properties of the setup a the begining of the loop
 #print(sensy_boi) 
 while True:
@@ -43,8 +49,6 @@ while True:
     nitrogen = data[4]/1.0
     phosphoros = data[5]/1.0
     potassium = data[6]/1.0
-
-    client = InfluxDBClient(host="influxdb", database="homegrow")
 
     data = [{
     "measurement": "sensor_data",
